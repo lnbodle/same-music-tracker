@@ -2,14 +2,19 @@ SOURCES =
 SOURCES += \
 src/main.c \
 src/utils.c \
-src/tracker_engine/tracker_engine.c \
-src/sound_engine/channel.c \
-src/sound_engine/filter.c \
-src/sound_engine/osc.c \
-src/sound_engine/sound_engine.c \
-src/sound_engine/adsr.c \
-src/ui_engine/ui_engine.c
+src/tracker/tracker.c \
+src/sound/channel.c \
+src/sound/filter.c \
+src/sound/osc.c \
+src/sound/sound.c \
+src/sound/adsr.c \
+src/ui/ui.c \
+src/control/control.c
+
+LIBS_SOURCES =
+LIBS_SOURCES += \
+libs/SDL_inprint/inprint2.c  
 
 linux:
-	gcc -o bin/tracker $(SOURCES) -lSDL2 -lm
+	gcc -o bin/tracker $(SOURCES) $(LIBS_SOURCES) -lSDL2 -lm
 	./bin/tracker

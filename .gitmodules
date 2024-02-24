@@ -1,0 +1,3 @@
+[submodule "libs/SDL_inprint"]
+	path = libs/SDL_inprint
+	url = https://github.com/driedfruit/SDL_inprint.git

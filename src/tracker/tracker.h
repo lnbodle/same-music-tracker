@@ -5,7 +5,7 @@
 #define PHRASE_NUMBER 16
 #define CHAIN_NUMBER 16
 
-#include "../sound_engine/sound_engine.h"
+#include "../sound/sound.h"
 
 typedef struct {
 
@@ -26,6 +26,8 @@ typedef enum {
 
 } TrackerMode;
 
+typedef int Song[CHANNEL_NUMBER][CHAIN_NUMBER];
+
 typedef struct {
 
     int current_step_index;
@@ -33,15 +35,17 @@ typedef struct {
     int current_chain_index;
     int tick;
 
-    int song[CHANNEL_NUMBER][CHAIN_NUMBER];
+    int song_x;
+
+    Song song;
     int chains[CHAIN_NUMBER];
     Phrase phrases[PHRASE_NUMBER];
 
-    SoundEngine *sound_engine;
-} TrackerEngine;
+    Sound *sound;
+} Tracker;
 
 
-void tracker_engine_init(TrackerEngine *tracker, SoundEngine *sound_engine);
-void tracker_engine_cycle(TrackerEngine *tracker);
+void tracker_init(Tracker *tracker, Sound *sound);
+void tracker_cycle(Tracker *tracker);
 
 #endif

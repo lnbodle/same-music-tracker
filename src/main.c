@@ -1,9 +1,12 @@
 #include "SDL2/SDL.h"
 #include <stdio.h>
 
-#include "sound_engine/sound_engine.h"
-#include "tracker_engine/tracker_engine.h"
-#include "ui_engine/ui_engine.h"
+#include "../libs/SDL_inprint/SDL2_inprint.h"
+
+#include "sound/sound.h"
+#include "tracker/tracker.h"
+#include "ui/ui.h"
+#include "control/control.h"
 
 #include "common.h"
 
@@ -13,26 +16,29 @@ SDL_AudioSpec audio_spec;
 
 SDL_Renderer *renderer;
 
-SoundEngine sound_engine;
-TrackerEngine tracker_engine;
-UiEngine ui_engine;
+Sound sound;
+Tracker tracker;
+Ui ui;
+Control control;
 
 int audio_buffer_size;
 float audio_buffer[SAMPLES];
 
-void audio_callback(void *audio, Uint8 *stream, int len) {
-    
-    tracker_engine_cycle(&tracker_engine);
+void audio_callback(void *audio, Uint8 *stream, int len)
+{
+
+    tracker_cycle(&tracker);
 
     float *buffer = (float *)stream;
 
     for (int index = 0; index < len / sizeof(float); index++)
     {
-        buffer[index] = sound_engine_cycle(&sound_engine);
+        buffer[index] = sound_cycle(&sound);
     }
 }
 
-void render_rect_callback(int x, int y, int width, int height) {
+void render_rect_callback(int x, int y, int width, int height)
+{
 
     SDL_Rect rect;
     rect.x = x;
@@ -42,6 +48,13 @@ void render_rect_callback(int x, int y, int width, int height) {
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderDrawRect(renderer, &rect);
+}
+
+void render_text_callback(int x, int y, char *text)
+{
+
+    incolor(0xFF0000, 0x333333);
+    inprint(renderer, text, x, y);
 }
 
 int main(int argc, char *argv[])
@@ -67,7 +80,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    //Audio
+    // Audio
     SDL_zero(audio_spec);
     audio_spec.freq = SAMPLE_RATE;
     audio_spec.format = AUDIO_F32;
@@ -80,12 +93,20 @@ int main(int argc, char *argv[])
 
     SDL_PauseAudioDevice(audio_device, 0);
 
-    sound_engine_init(&sound_engine);
-    tracker_engine_init(&tracker_engine, &sound_engine);
+    sound_init(&sound);
+    tracker_init(&tracker, &sound);
 
-    ui_engine.sound_engine = &sound_engine;
-    ui_engine.tracker_engine = &tracker_engine;
-    ui_engine.render_rect = render_rect_callback;
+    ui.sound = &sound;
+    ui.tracker = &tracker;
+    ui.render_rect = render_rect_callback;
+    ui.render_text = render_text_callback;
+    ui.font_width = 8;
+    ui.font_height = 8;
+
+    control.tracker = &tracker;
+
+    inrenderer(renderer);
+    prepare_inline_font();
 
     int quit = 0;
     SDL_Event e;
@@ -97,8 +118,7 @@ int main(int argc, char *argv[])
 
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
-        ui_engine_render(&ui_engine);
-        //SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        ui_render(&ui);
 
         SDL_RenderPresent(renderer);
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -110,8 +130,59 @@ int main(int argc, char *argv[])
                 quit = 1;
             }
 
+            if (e.type == SDL_KEYDOWN)
+            {
+                SDL_Keycode keycode = e.key.keysym.sym;
+
+                switch (keycode)
+                {
+
+                case SDLK_LEFT:
+                    control_set_value(&control, Left, 1);
+                    break;
+
+                case SDLK_RIGHT:
+                    control_set_value(&control, Right, 1);
+                    break;
+
+                case SDLK_UP:
+                    control_set_value(&control, Up, 1);
+                    break;
+
+                case SDLK_DOWN:
+                    control_set_value(&control, Down, 1);
+                    break;
+                }
+                control_event(&control);
+            }
+
+            if (e.type == SDL_KEYUP)
+            {
+                SDL_Keycode keycode = e.key.keysym.sym;
+                switch (keycode)
+                {
+
+                case SDLK_LEFT:
+                    control_set_value(&control, Left, 0);
+                    break;
+
+                case SDLK_RIGHT:
+                    control_set_value(&control, Right, 0);
+                    break;
+
+                case SDLK_UP:
+                    control_set_value(&control, Up, 0);
+                    break;
+
+                case SDLK_DOWN:
+                    control_set_value(&control, Down, 0);
+                    break;
+                }
+            }
         }
     }
+
+    kill_inline_font();
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
