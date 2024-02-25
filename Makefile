@@ -8,8 +8,13 @@ src/sound/filter.c \
 src/sound/osc.c \
 src/sound/sound.c \
 src/sound/adsr.c \
-src/ui/ui.c \
-src/control/control.c
+src/sound/instrument.c \
+src/graphics/graphics.c \
+src/input/input.c \
+src/views/tracker_view.c \
+src/views/song_view.c \
+src/views/chain_view.c \
+src/views/phrase_view.c
 
 LIBS_SOURCES =
 LIBS_SOURCES += \

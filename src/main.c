@@ -2,31 +2,29 @@
 #include <stdio.h>
 
 #include "../libs/SDL_inprint/SDL2_inprint.h"
-
 #include "sound/sound.h"
 #include "tracker/tracker.h"
-#include "ui/ui.h"
-#include "control/control.h"
-
+#include "graphics/graphics.h"
+#include "input/input.h"
+#include "views/tracker_view.h"
 #include "common.h"
 
 SDL_AudioCallback callback;
 SDL_AudioDeviceID audio_device;
 SDL_AudioSpec audio_spec;
-
 SDL_Renderer *renderer;
 
 Sound sound;
 Tracker tracker;
-Ui ui;
-Control control;
+Graphics graphics;
+Input input;
+TrackerView tracker_view;
 
 int audio_buffer_size;
 float audio_buffer[SAMPLES];
 
 void audio_callback(void *audio, Uint8 *stream, int len)
 {
-
     tracker_cycle(&tracker);
 
     float *buffer = (float *)stream;
@@ -39,7 +37,6 @@ void audio_callback(void *audio, Uint8 *stream, int len)
 
 void render_rect_callback(int x, int y, int width, int height)
 {
-
     SDL_Rect rect;
     rect.x = x;
     rect.y = y;
@@ -52,8 +49,7 @@ void render_rect_callback(int x, int y, int width, int height)
 
 void render_text_callback(int x, int y, char *text)
 {
-
-    incolor(0xFF0000, 0x333333);
+    incolor(0xFFFFFF, 0x333333);
     inprint(renderer, text, x, y);
 }
 
@@ -80,7 +76,6 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // Audio
     SDL_zero(audio_spec);
     audio_spec.freq = SAMPLE_RATE;
     audio_spec.format = AUDIO_F32;
@@ -96,14 +91,12 @@ int main(int argc, char *argv[])
     sound_init(&sound);
     tracker_init(&tracker, &sound);
 
-    ui.sound = &sound;
-    ui.tracker = &tracker;
-    ui.render_rect = render_rect_callback;
-    ui.render_text = render_text_callback;
-    ui.font_width = 8;
-    ui.font_height = 8;
+    graphics.render_rect = render_rect_callback;
+    graphics.render_text = render_text_callback;
+    graphics.font_width = 8;
+    graphics.font_height = 8;
 
-    control.tracker = &tracker;
+    tracker_view_init(&tracker_view, &tracker, &graphics, &input);
 
     inrenderer(renderer);
     prepare_inline_font();
@@ -118,7 +111,7 @@ int main(int argc, char *argv[])
 
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
-        ui_render(&ui);
+        tracker_view_render(&tracker_view);
 
         SDL_RenderPresent(renderer);
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -138,22 +131,39 @@ int main(int argc, char *argv[])
                 {
 
                 case SDLK_LEFT:
-                    control_set_value(&control, Left, 1);
+                    input_set(&input, Left, 1);
                     break;
 
                 case SDLK_RIGHT:
-                    control_set_value(&control, Right, 1);
+                    input_set(&input, Right, 1);
                     break;
 
                 case SDLK_UP:
-                    control_set_value(&control, Up, 1);
+                    input_set(&input, Up, 1);
                     break;
 
                 case SDLK_DOWN:
-                    control_set_value(&control, Down, 1);
+                    input_set(&input, Down, 1);
+                    break;
+
+                case SDLK_SPACE:
+                    input_set(&input, Play, 1);
+                    break;
+
+                case SDLK_LSHIFT:
+                    input_set(&input, Shift, 1);
+                    break;
+
+                case SDLK_a:
+                    input_set(&input, Option, 1);
+                    break;
+
+                case SDLK_z:
+                    input_set(&input, Edit, 1);
                     break;
                 }
-                control_event(&control);
+
+                tracker_view_input(&tracker_view);
             }
 
             if (e.type == SDL_KEYUP)
@@ -163,19 +173,35 @@ int main(int argc, char *argv[])
                 {
 
                 case SDLK_LEFT:
-                    control_set_value(&control, Left, 0);
+                    input_set(&input, Left, 0);
                     break;
 
                 case SDLK_RIGHT:
-                    control_set_value(&control, Right, 0);
+                    input_set(&input, Right, 0);
                     break;
 
                 case SDLK_UP:
-                    control_set_value(&control, Up, 0);
+                    input_set(&input, Up, 0);
                     break;
 
                 case SDLK_DOWN:
-                    control_set_value(&control, Down, 0);
+                    input_set(&input, Down, 0);
+                    break;
+
+                case SDLK_SPACE:
+                    input_set(&input, Play, 0);
+                    break;
+
+                case SDLK_LSHIFT:
+                    input_set(&input, Shift, 0);
+                    break;
+
+                case SDLK_a:
+                    input_set(&input, Option, 0);
+                    break;
+                    
+                case SDLK_z:
+                    input_set(&input, Edit, 0);
                     break;
                 }
             }

@@ -2,11 +2,12 @@
 #include "adsr.h"
 #include "filter.h"
 #include "osc.h"
+#include "../utils.h"
 
 void channel_init(Channel *channel)
 {
 
-    osc_init(&channel->osc);
+    instrument_init(&channel->instruments[0]);
     filter_init(&channel->filter);
     adsr_init(&channel->adsr);
 }
@@ -15,17 +16,12 @@ float channel_cycle(Channel *channel)
 {
 
     float adsr = adsr_cycle(&channel->adsr);
-
-    channel->filter.frequency = 100 + adsr * 3000;
-
-    return filter_cycle(&channel->filter, osc_cycle(&channel->osc)) * adsr;
-    
+    return instrument_cycle(&channel->instruments[0]) * adsr;
 }
 
 void channel_set_frequency(Channel *channel, float frequency)
 {
-
-    channel->osc.frequency = frequency;
+    channel->instruments[0].frequency = frequency;
 }
 
 void channel_gate_on(Channel *channel)

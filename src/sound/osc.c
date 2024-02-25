@@ -6,13 +6,11 @@
 
 void osc_init(Osc *osc)
 {
-
     osc->waveform_type = SINE;
 }
 
 float osc_cycle(Osc *osc)
 {
-
     float delta_time = 1.0f / SAMPLE_RATE;
     osc->tick += delta_time;
 

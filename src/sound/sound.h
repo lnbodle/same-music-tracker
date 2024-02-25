@@ -2,8 +2,7 @@
 #define SOUND_H_
 
 #include "channel.h"
-
-#define CHANNEL_NUMBER 16
+#include "../common.h"
 
 typedef struct {
 

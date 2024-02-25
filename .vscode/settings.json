@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "sdl2_inprint.h": "c"
+        "sdl2_inprint.h": "c",
+        "song_view_c": "c"
     }
 }

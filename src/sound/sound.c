@@ -20,7 +20,7 @@ float sound_cycle(Sound *sound) {
 
     for (int i = 0 ; i < CHANNEL_NUMBER; i++) {
 
-        out += channel_cycle(&sound->channels[i]) / CHANNEL_NUMBER;
+        out += channel_cycle(&sound->channels[i]);
     }
 
     return out;
