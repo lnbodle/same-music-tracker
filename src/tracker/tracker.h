@@ -36,7 +36,7 @@ typedef struct {
 
     int playing;
 
-    int song[CHANNEL_NUMBER][CHAIN_PER_SONG]; 
+    int song[TRACK_SIZE][CHAIN_PER_SONG]; 
     int chains[CHAIN_SIZE][PHRASE_PER_CHAIN];
     Step phrases[PHRASE_SIZE][STEP_PER_PHRASE];
 

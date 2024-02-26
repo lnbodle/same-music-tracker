@@ -7,7 +7,8 @@
 
 typedef struct {
 
-    int cursor;
+    int cursor_x;
+    int cursor_y;
 
     Tracker *tracker;
     Graphics *graphics;

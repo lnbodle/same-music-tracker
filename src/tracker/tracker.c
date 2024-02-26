@@ -15,7 +15,7 @@ void tracker_cycle(Tracker *tracker)
 
     if (tracker->playing)
     {
-        if (tracker->tick % 4 == 0)
+        if (tracker->tick % 10 == 0)
         {
             for (int i = 0; i < CHANNEL_NUMBER; i++)
             {
@@ -28,6 +28,8 @@ void tracker_cycle(Tracker *tracker)
                 if (step.note != 0)
                 {
                     float frequency = note_to_frequency(64 + step.note);
+                    
+                    channel_set_volume(channel,0.2f);
                     channel_set_frequency(channel, frequency);
                     channel_gate_off(channel);
                     channel_gate_on(channel);

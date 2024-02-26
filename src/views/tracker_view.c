@@ -2,9 +2,9 @@
 
 void tracker_view_init(TrackerView *tracker_view, Tracker *tracker, Graphics *graphics, Input *input)
 {
-    tracker_view->tracker  = tracker;
+    tracker_view->tracker = tracker;
     tracker_view->graphics = graphics;
-    tracker_view->input    = input;
+    tracker_view->input = input;
 
     song_view_init(&tracker_view->song_view, tracker, graphics, input);
     chain_view_init(&tracker_view->chain_view, tracker, graphics, input);
@@ -13,6 +13,12 @@ void tracker_view_init(TrackerView *tracker_view, Tracker *tracker, Graphics *gr
 
 void tracker_view_input(TrackerView *tracker_view)
 {
+    if (input_get(tracker_view->input, Play))
+    {
+        tracker_view->tracker->playing = !tracker_view->tracker->playing;
+        return;
+    }
+
     switch (tracker_view->tracker->mode)
     {
     case SONG_MODE:
@@ -29,7 +35,6 @@ void tracker_view_input(TrackerView *tracker_view)
 
 void tracker_view_render(TrackerView *tracker_view)
 {
-
     switch (tracker_view->tracker->mode)
     {
     case SONG_MODE:

@@ -14,7 +14,7 @@ void song_view_init(SongView *song_view, Tracker *tracker, Graphics *graphics, I
 
 void song_view_input(SongView *song_view)
 {
-    if (input_get(song_view->input, Shift))
+    if (input_get(song_view->input, Edit))
     {
         if (input_get(song_view->input, Right))
         {
@@ -25,42 +25,39 @@ void song_view_input(SongView *song_view)
         {
             song_view->tracker->song[song_view->cursor_x][song_view->cursor_y] = increase_index(song_view->tracker->song[song_view->cursor_x][song_view->cursor_y], CHAIN_SIZE);
         }
+
+        return;
     }
-    else if (input_get(song_view->input, Option))
+
+    if (input_get(song_view->input, Shift))
     {
         if (input_get(song_view->input, Right))
         {
             song_view->tracker->mode = CHAIN_MODE;
             song_view->tracker->selected_chain = song_view->tracker->song[song_view->cursor_x][song_view->cursor_y];
         }
+
+        return;
     }
-    else if (input_get(song_view->input, Play))
-    {
 
-        song_view->tracker->playing = !song_view->tracker->playing;
+    if (input_get(song_view->input, Left))
+    {
+        song_view->cursor_x = decrease_index(song_view->cursor_x, TRACK_SIZE);
     }
-    else if (!input_get(song_view->input, Shift) && !input_get(song_view->input, Option) && !input_get(song_view->input, Play))
+
+    if (input_get(song_view->input, Right))
     {
+        song_view->cursor_x = increase_index(song_view->cursor_x, TRACK_SIZE);
+    }
 
-        if (input_get(song_view->input, Left))
-        {
-            song_view->cursor_x = decrease_index(song_view->cursor_x, TRACK_SIZE);
-        }
+    if (input_get(song_view->input, Up))
+    {
+        song_view->cursor_y = decrease_index(song_view->cursor_y, SONG_SIZE);
+    }
 
-        if (input_get(song_view->input, Right))
-        {
-            song_view->cursor_x = increase_index(song_view->cursor_x, TRACK_SIZE);
-        }
-
-        if (input_get(song_view->input, Up))
-        {
-            song_view->cursor_y = decrease_index(song_view->cursor_y, SONG_SIZE);
-        }
-
-        if (input_get(song_view->input, Down))
-        {
-            song_view->cursor_y = increase_index(song_view->cursor_y, SONG_SIZE);
-        }
+    if (input_get(song_view->input, Down))
+    {
+        song_view->cursor_y = increase_index(song_view->cursor_y, SONG_SIZE);
     }
 }
 

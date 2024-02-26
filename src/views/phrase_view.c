@@ -17,7 +17,7 @@ void phrase_view_init(PhraseView *phrase_view, Tracker *tracker, Graphics *graph
 
 void phrase_view_input(PhraseView *phrase_view)
 {
-    if (input_get(phrase_view->input, Shift))
+    if (input_get(phrase_view->input, Edit))
     {
 
         if (input_get(phrase_view->input, Right))
@@ -29,38 +29,36 @@ void phrase_view_input(PhraseView *phrase_view)
         {
             phrase_view->tracker->phrases[phrase_view->tracker->selected_phrase][phrase_view->tracker->selected_step].octave = decrease_index(phrase_view->tracker->phrases[phrase_view->tracker->selected_phrase][phrase_view->tracker->selected_step].octave, 10);
         }
+        return;
     }
-    else if (input_get(phrase_view->input, Option))
+
+    if (input_get(phrase_view->input, Shift))
     {
         if (input_get(phrase_view->input, Right))
         {
             phrase_view->tracker->mode = SONG_MODE;
         }
+        return;
     }
-    else if (input_get(phrase_view->input, Play))
+
+    if (input_get(phrase_view->input, Up))
     {
+        phrase_view->tracker->selected_step = decrease_index(phrase_view->tracker->selected_step, STEP_PER_PHRASE);
     }
-    else if (!input_get(phrase_view->input, Shift) && !input_get(phrase_view->input, Option) && !input_get(phrase_view->input, Play))
+
+    if (input_get(phrase_view->input, Down))
     {
-        if (input_get(phrase_view->input, Up))
-        {
-            phrase_view->tracker->selected_step = decrease_index(phrase_view->tracker->selected_step, STEP_PER_PHRASE);
-        }
+        phrase_view->tracker->selected_step = increase_index(phrase_view->tracker->selected_step, STEP_PER_PHRASE);
+    }
 
-        if (input_get(phrase_view->input, Down))
-        {
-            phrase_view->tracker->selected_step = increase_index(phrase_view->tracker->selected_step, STEP_PER_PHRASE);
-        }
+    if (input_get(phrase_view->input, Right))
+    {
+        phrase_view->tracker->phrases[phrase_view->tracker->selected_phrase][phrase_view->tracker->selected_step].note = increase_index(phrase_view->tracker->phrases[phrase_view->tracker->selected_phrase][phrase_view->tracker->selected_step].note, 8);
+    }
 
-        if (input_get(phrase_view->input, Right))
-        {
-            phrase_view->tracker->phrases[phrase_view->tracker->selected_phrase][phrase_view->tracker->selected_step].note = increase_index(phrase_view->tracker->phrases[phrase_view->tracker->selected_phrase][phrase_view->tracker->selected_step].note, 8);
-        }
-
-        if (input_get(phrase_view->input, Left))
-        {
-            phrase_view->tracker->phrases[phrase_view->tracker->selected_phrase][phrase_view->tracker->selected_step].note = decrease_index(phrase_view->tracker->phrases[phrase_view->tracker->selected_phrase][phrase_view->tracker->selected_step].note, 8);
-        }
+    if (input_get(phrase_view->input, Left))
+    {
+        phrase_view->tracker->phrases[phrase_view->tracker->selected_phrase][phrase_view->tracker->selected_step].note = decrease_index(phrase_view->tracker->phrases[phrase_view->tracker->selected_phrase][phrase_view->tracker->selected_step].note, 8);
     }
 }
 
@@ -86,12 +84,10 @@ void phrase_view_render(PhraseView *phrase_view)
 
         if (step.note == 0)
         {
-
             snprintf(note_buffer, sizeof(note_buffer), "---");
         }
         else
         {
-
             snprintf(note_buffer, sizeof(note_buffer), "%c-%i", NOTES[step.note], step.octave);
         }
 

@@ -20,6 +20,7 @@ typedef enum {
 typedef struct
 {
     float tick;
+    float volume;
     Instrument instruments[CHANNEL_VOICE_NUMBER];
     Filter filter;
     Adsr adsr;
@@ -29,6 +30,7 @@ typedef struct
 void channel_init(Channel *channel);
 float channel_cycle(Channel *channel);
 void channel_set_frequency(Channel *channel, float frequency);
+void channel_set_volume(Channel *channel, float volume);
 void channel_gate_on(Channel *channel);
 void channel_gate_off(Channel *channel);
 

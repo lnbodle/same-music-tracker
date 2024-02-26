@@ -6,7 +6,6 @@
 
 void chain_view_init(ChainView *chain_view, Tracker *tracker, Graphics *graphics, Input *input)
 {
-
     chain_view->tracker = tracker;
     chain_view->graphics = graphics;
     chain_view->input = input;
@@ -14,41 +13,45 @@ void chain_view_init(ChainView *chain_view, Tracker *tracker, Graphics *graphics
 
 void chain_view_input(ChainView *chain_view)
 {
-    if (input_get(chain_view->input, Shift))
+    if (input_get(chain_view->input, Edit))
     {
+        return;
     }
-    else if (input_get(chain_view->input, Option))
+
+    if (input_get(chain_view->input, Shift))
     {
         if (input_get(chain_view->input, Right))
         {
             chain_view->tracker->mode = PHRASE_MODE;
             chain_view->tracker->selected_phrase = chain_view->tracker->chains[chain_view->tracker->selected_chain][chain_view->cursor];
         }
+
+        return;
     }
-    else if (input_get(chain_view->input, Play))
+
+    if (input_get(chain_view->input, Play))
     {
+        return;
     }
-    else if (!input_get(chain_view->input, Shift) && !input_get(chain_view->input, Option) && !input_get(chain_view->input, Play))
+
+    if (input_get(chain_view->input, Up))
     {
-        if (input_get(chain_view->input, Up))
-        {
-            chain_view->cursor = decrease_index(chain_view->cursor, PHRASE_PER_CHAIN);
-        }
+        chain_view->cursor = decrease_index(chain_view->cursor, PHRASE_PER_CHAIN);
+    }
 
-        if (input_get(chain_view->input, Down))
-        {
-            chain_view->cursor = increase_index(chain_view->cursor, PHRASE_PER_CHAIN);
-        }
+    if (input_get(chain_view->input, Down))
+    {
+        chain_view->cursor = increase_index(chain_view->cursor, PHRASE_PER_CHAIN);
+    }
 
-        if (input_get(chain_view->input, Right))
-        {
-            chain_view->tracker->chains[chain_view->tracker->selected_chain][chain_view->cursor] = increase_index(chain_view->tracker->chains[chain_view->tracker->selected_chain][chain_view->cursor], CHAIN_SIZE);
-        }
+    if (input_get(chain_view->input, Right))
+    {
+        chain_view->tracker->chains[chain_view->tracker->selected_chain][chain_view->cursor] = increase_index(chain_view->tracker->chains[chain_view->tracker->selected_chain][chain_view->cursor], CHAIN_SIZE);
+    }
 
-        if (input_get(chain_view->input, Left))
-        {
-            chain_view->tracker->chains[chain_view->tracker->selected_chain][chain_view->cursor] = decrease_index(chain_view->tracker->chains[chain_view->tracker->selected_chain][chain_view->cursor], CHAIN_SIZE);
-        }
+    if (input_get(chain_view->input, Left))
+    {
+        chain_view->tracker->chains[chain_view->tracker->selected_chain][chain_view->cursor] = decrease_index(chain_view->tracker->chains[chain_view->tracker->selected_chain][chain_view->cursor], CHAIN_SIZE);
     }
 }
 

@@ -7,7 +7,7 @@
 #define STEP_PER_PHRASE 16
 
 #define TRACK_SIZE 4
-#define SONG_SIZE 4
+#define SONG_SIZE 16
 
 #define PHRASE_SIZE 16
 #define PHRASE_PER_CHAIN 16

@@ -15,8 +15,13 @@ void channel_init(Channel *channel)
 float channel_cycle(Channel *channel)
 {
 
-    float adsr = adsr_cycle(&channel->adsr);
+    float adsr = adsr_cycle(&channel->adsr) * channel->volume;
     return instrument_cycle(&channel->instruments[0]) * adsr;
+}
+
+void channel_set_volume(Channel *channel, float volume) {
+
+    channel->volume = volume;
 }
 
 void channel_set_frequency(Channel *channel, float frequency)
