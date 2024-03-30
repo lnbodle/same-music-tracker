@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "sdl2_inprint.h": "c",
-        "song_view_c": "c"
+        "song_view_c": "c",
+        "pthread.h": "c",
+        "fcntl.h": "c",
+        "application.h": "c",
+        "utils.h": "c"
     }
 }

@@ -1,5 +1,5 @@
-#ifndef adsr_H_
-#define adsr_H_
+#ifndef ADSR_H_
+#define ADSR_H_
 
 enum adsrState
 {

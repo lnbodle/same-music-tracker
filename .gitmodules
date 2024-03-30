@@ -1,3 +1,9 @@
 [submodule "libs/SDL_inprint"]
 	path = libs/SDL_inprint
 	url = https://github.com/driedfruit/SDL_inprint.git
+[submodule "libs/libsndfile"]
+	path = libs/libsndfile
+	url = https://github.com/libsndfile/libsndfile.git
+[submodule "libs/soundpipe"]
+	path = libs/soundpipe
+	url = https://git.sr.ht/~pbatch/soundpipe

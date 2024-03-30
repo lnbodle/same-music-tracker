@@ -2,9 +2,9 @@
 #define GRAPHICS_H_
 
 #include "../sound/sound.h"
-#include "../tracker/tracker.h"
 
-typedef struct {
+typedef struct
+{
 
     int font_width;
     int font_height;
@@ -19,5 +19,6 @@ void graphics_render_rect(Graphics *graphics, int x, int y, int width, int heigh
 void graphics_render_text(Graphics *graphics, int x, int y, char *string);
 void graphics_render_point(Graphics *graphics, int x, int y);
 void graphics_render_2_digit_int(Graphics *graphics, int x, int y, int value);
+void graphics_render_float(Graphics *graphics, int x, int y, float value);
 
 #endif

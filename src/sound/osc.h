@@ -3,13 +3,17 @@
 
 typedef enum {
     SINE,
-    SAW
+    TRIANGLE,
+    SAW,
+    SQUARE,
+    NOISE
 } WaveformType;
 
 typedef struct  {
 
     float tick;
     float frequency;
+    float phase;
     int waveform_type;
 } Osc;
 

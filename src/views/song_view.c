@@ -1,91 +1,128 @@
+#include <stdio.h>
+
 #include "song_view.h"
 
-#include "../graphics/graphics.h"
-#include "../input/input.h"
 #include "../common.h"
 #include "../utils.h"
+#include "../application/application.h"
 
-void song_view_init(SongView *song_view, Tracker *tracker, Graphics *graphics, Input *input)
+void song_view_input(Application *app)
 {
-    song_view->tracker = tracker;
-    song_view->graphics = graphics;
-    song_view->input = input;
-}
 
-void song_view_input(SongView *song_view)
-{
-    if (input_get(song_view->input, Edit))
+    if (input_get(&app->input, Edit))
     {
-        if (input_get(song_view->input, Right))
+        if (input_get(&app->input, Right))
         {
-            song_view->tracker->song[song_view->cursor_x][song_view->cursor_y] = increase_index(song_view->tracker->song[song_view->cursor_x][song_view->cursor_y], CHAIN_SIZE);
+            app->song[app->cursor_x][app->cursor_y]++;
         }
 
-        if (input_get(song_view->input, Left))
+        if (input_get(&app->input, Left))
         {
-            song_view->tracker->song[song_view->cursor_x][song_view->cursor_y] = increase_index(song_view->tracker->song[song_view->cursor_x][song_view->cursor_y], CHAIN_SIZE);
+            app->song[app->cursor_x][app->cursor_y]--;
         }
 
+        app->song[app->cursor_x][app->cursor_y] = clamp_int(app->song[app->cursor_x][app->cursor_y], -1, PHRASE_SIZE);
         return;
     }
 
-    if (input_get(song_view->input, Shift))
+    if (input_get(&app->input, Shift))
     {
-        if (input_get(song_view->input, Right))
+        if (input_get(&app->input, Right) && app->song[app->cursor_x][app->cursor_y] != -1)
         {
-            song_view->tracker->mode = CHAIN_MODE;
-            song_view->tracker->selected_chain = song_view->tracker->song[song_view->cursor_x][song_view->cursor_y];
+            app->current_view_indice = VIEW_PHRASE;
+            app->selected_phrase = app->song[app->cursor_x][app->cursor_y];
+            application_reset_cursor(app);
         }
-
         return;
     }
 
-    if (input_get(song_view->input, Left))
+    if (input_get(&app->input, Left))
     {
-        song_view->cursor_x = decrease_index(song_view->cursor_x, TRACK_SIZE);
+        app->cursor_x--;
     }
 
-    if (input_get(song_view->input, Right))
+    if (input_get(&app->input, Right))
     {
-        song_view->cursor_x = increase_index(song_view->cursor_x, TRACK_SIZE);
+        app->cursor_x++;
     }
 
-    if (input_get(song_view->input, Up))
+    if (input_get(&app->input, Up))
     {
-        song_view->cursor_y = decrease_index(song_view->cursor_y, SONG_SIZE);
+        app->cursor_y--;
     }
 
-    if (input_get(song_view->input, Down))
+    if (input_get(&app->input, Down))
     {
-        song_view->cursor_y = increase_index(song_view->cursor_y, SONG_SIZE);
+        app->cursor_y++;
     }
+
+    app->cursor_x = clamp_int(app->cursor_x, 0, TRACK_SIZE - 1);
+    app->cursor_y = clamp_int(app->cursor_y, 0, SONG_SIZE - 1);
 }
 
-void song_view_render(SongView *song_view)
+void song_view_render(Application *app)
 {
 
     int title_x = 0;
     int title_y = 0;
 
     int tracks_x = 0;
-    int tracks_y = 16;
+    int tracks_y = app->font_height + 2;
 
     int chains_x = 0;
-    int chains_y = 32;
+    int chains_y = (app->font_height * 2) + 2;
 
-    graphics_render_text(song_view->graphics, 0, 0, "SONG");
+    graphics_render_text(
+        &app->graphics,
+        title_x,
+        title_y,
+        "SONG");
+
+    int row_width = app->font_width * 2 + app->padding;
+
+    graphics_render_rect(
+        &app->graphics,
+        chains_x + app->cursor_x * row_width,
+        chains_y + app->cursor_y * app->font_height,
+        app->font_width * 2,
+        app->font_height);
+
+    graphics_render_rect(
+        &app->graphics,
+        chains_x,
+        chains_y + app->playing_phrase * app->font_height,
+        480,
+        app->font_height);
 
     for (int i = 0; i < TRACK_SIZE; i++)
     {
+
         char c[2];
         sprintf(c, "%d", i + 1);
-        graphics_render_text(song_view->graphics, tracks_x + i * (song_view->graphics->font_width + 2) * 2, tracks_y, c);
+        graphics_render_text(
+            &app->graphics,
+            tracks_x + i * row_width,
+            tracks_y,
+            c);
 
         for (int j = 0; j < SONG_SIZE; j++)
         {
-            graphics_render_2_digit_int(song_view->graphics, chains_x + i * (song_view->graphics->font_width + 2) * 2, chains_y + j * song_view->graphics->font_height, song_view->tracker->song[i][j]);
+            if (app->song[i][j] != -1)
+            {
+                graphics_render_2_digit_int(
+                    &app->graphics,
+                    chains_x + i * row_width,
+                    chains_y + j * app->font_height,
+                    app->song[i][j]);
+            }
+            else
+            {
+                graphics_render_text(
+                    &app->graphics,
+                    chains_x + i * row_width,
+                    chains_y + j * app->font_height,
+                    "--");
+            }
         }
     }
-
-    graphics_render_rect(song_view->graphics, chains_x + song_view->cursor_x * (song_view->graphics->font_width + 2) * 2, chains_y + song_view->cursor_y * song_view->graphics->font_height, song_view->graphics->font_width * 2, song_view->graphics->font_height);
 }

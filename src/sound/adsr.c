@@ -4,8 +4,10 @@
 void adsr_init(Adsr *adsr)
 {
     adsr_reset(adsr);
+    
     adsr_set_target_ratio_a(adsr, 0.3f);
     adsr_set_target_ratio_dr(adsr, 0.0001f);
+
     adsr_set_attack_rate(adsr, 0.01f * 44100.0f) ;
     adsr_set_decay_rate(adsr, 0.3f * 44100.0f);
     adsr_set_release_rate(adsr, 0.3f * 44100.0f);

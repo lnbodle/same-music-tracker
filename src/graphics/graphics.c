@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "graphics.h"
 
 void graphics_render_rect(Graphics *graphics, int x, int y, int width, int height)
@@ -22,7 +23,7 @@ void graphics_render_point(Graphics *graphics, int x, int y)
 void graphics_render_2_digit_int(Graphics *graphics, int x, int y, int value)
 {
 
-    char text[2];
+    char text[13];
     sprintf(text, "%d", value);
 
     if (value < 10)
@@ -34,4 +35,12 @@ void graphics_render_2_digit_int(Graphics *graphics, int x, int y, int value)
         sprintf(text, "%d", value);
     }
     graphics_render_text(graphics, x, y, text);
+}
+
+void graphics_render_float(Graphics *graphics, int x, int y, float value)
+{
+
+    char buffer[64];
+    int ret = snprintf(buffer, sizeof buffer, "%f", value);
+    graphics_render_text(graphics, x, y, buffer);
 }

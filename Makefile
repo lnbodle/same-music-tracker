@@ -1,25 +1,49 @@
-SOURCES = 
-SOURCES += \
+# tracker - simple terminal
+# See LICENSE file for copyright and license details.
+
+include config.mk
+
+SRC =
+SRC += \
 src/main.c \
 src/utils.c \
-src/tracker/tracker.c \
 src/sound/channel.c \
-src/sound/filter.c \
-src/sound/osc.c \
 src/sound/sound.c \
-src/sound/adsr.c \
-src/sound/instrument.c \
+src/sound/envelope.c \
 src/graphics/graphics.c \
 src/input/input.c \
-src/views/tracker_view.c \
 src/views/song_view.c \
-src/views/chain_view.c \
-src/views/phrase_view.c
+src/views/phrase_view.c \
+src/views/envelopes_view.c \
+src/views/instrument_view.c \
+src/application/application.c \
+src/sound/osc.c \
+src/sound/adsr.c \
+src/sound/filter.c \
+src/sound/sampler.c \
+src/instrument/instrument.c \
+libs/tinywav/tinywav.c
 
-LIBS_SOURCES =
-LIBS_SOURCES += \
-libs/SDL_inprint/inprint2.c  
+OBJ = ${SRC:.c=.o}
 
-linux:
-	gcc -o bin/tracker $(SOURCES) $(LIBS_SOURCES) -lSDL2 -lm
-	./bin/tracker
+all: options tracker 
+
+options:
+	@echo tracker build options:
+	@echo "CFLAGS   = ${CFLAGS}"
+	@echo "LDFLAGS  = ${LDFLAGS}"
+	@echo "CC       = ${CC}"
+
+.c.o:
+	@echo $(CC) $<
+	@${CC} -c ${CFLAGS} $<
+
+tracker: 
+	@echo $(CC) -o $@
+	@${CC} -o bin/$@ ${SRC} ${LDFLAGS}
+
+clean:
+	@echo cleaning
+	@rm -f tracker ${OBJ}
+
+.PHONY: all options clean

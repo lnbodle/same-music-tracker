@@ -3,35 +3,37 @@
 
 #define CHANNEL_VOICE_NUMBER 8
 
-#include "instrument.h"
+#include "../common.h"
+#include "../instrument/instrument.h"
+#include "osc.h"
+#include "envelope.h"
 #include "filter.h"
-#include "adsr.h"
-
-typedef enum {
-
-    MONO,
-    MINOR,
-    MAJOR,
-    MINOR_SEVEN,
-    MAJOR_SEVEN
-
-} ChordType;
+#include "sampler.h"
 
 typedef struct
 {
     float tick;
     float volume;
-    Instrument instruments[CHANNEL_VOICE_NUMBER];
+    float frequency;
+    float gate;
+
+    Osc osc;
+    Sampler sampler;
+    Envelope envelopes[4];
     Filter filter;
-    Adsr adsr;
-    ChordType chord_type;
+
+    Instrument *instrument;
 } Channel;
 
 void channel_init(Channel *channel);
+void channel_free(Channel *channel);
 float channel_cycle(Channel *channel);
 void channel_set_frequency(Channel *channel, float frequency);
 void channel_set_volume(Channel *channel, float volume);
 void channel_gate_on(Channel *channel);
 void channel_gate_off(Channel *channel);
+float channel_substractive_cycle(Channel *channel);
+float channel_sampler_cycle(Channel *channel);
+void channel_set_instrument(Channel *channel, Instrument *instrument);
 
 #endif

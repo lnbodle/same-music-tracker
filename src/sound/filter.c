@@ -1,25 +1,32 @@
-#include <math.h>
-#include <stdio.h>
 
+#include <math.h>
 #include "../common.h"
 #include "filter.h"
 
-void filter_init(Filter *filter) {
-
-    filter->frequency = 200.0f;
-    filter->previous_input = 0.0f;
-    filter->previous_output = 0.0f;
+void filter_init(Filter *filter)
+{
+    filter->cutoff = 1000.0f;
 }
 
-float filter_cycle(Filter *filter, float input) {
-    
-    float x = tanf(M_PI * filter->frequency / SAMPLE_RATE);
-    float output = x * input + x * filter->previous_input - (x-1) * filter->previous_output;
-    
-    output /= (x+1);
+float filter_cycle(Filter *filter, float input)
+{
 
-    filter->previous_output = output;
-    filter->previous_input = input;
+    float delta_time = 1.0f / (float)SAMPLE_RATE;
 
-    return output;
+    float fc = filter->cutoff;
+    float rc = 1.0f / (2 * M_PI * fc);
+    float dt = delta_time;
+    float a = dt / (rc + dt);
+
+    filter->stages[0] = a * input + (1.0f - a) * filter->stages[0];
+    for (int i = 0; i < 4; i++)
+    {
+        filter->stages[i] = a * filter->stages[i - 1] + (1.0f - a) * filter->stages[i];
+    }
+
+    return filter->stages[3];
+}
+
+void filter_free(Filter *filter)
+{
 }
